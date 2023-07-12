@@ -122,13 +122,17 @@ def extract_answers(request):
    return submitted_anwsers
 
 def show_exam_result(request, course_id, submission_id):
-    que = Question.objects.get(course=course_id)
-    choice = Choice.objects.get(question=que, correct=1)
+    que = Question.objects.filter(course=course_id).values()
     que_count = Question.objects.filter(course=course_id).count()
+    choice = []
+    for i in range(que_count):
+        choice.append(Choice.objects.filter(question=que[i]['id'], correct=1).values())
 
     context = {}
     answers = []
-    answers.append(choice.id)
+
+    for i in range(que_count):
+        answers.append(choice[i][0]['id'])
 
     choiced = extract_answers(request)
     total = 0
@@ -141,7 +145,8 @@ def show_exam_result(request, course_id, submission_id):
     context['score'] = total
     context['chooced'] = choiced
     context['correct'] = answers
-    context['que'] = que
+    context['que'] = Question.objects.all
+    context['choice'] = Choice.objects.all
 
     if len(choiced) == total:
         context['message'] = "Congratulations"

@@ -56,6 +56,13 @@
                     <div class="form-group">
                         {{ correct }}
                         {{ chooced }}
+                        {% for i in correct %}
+                            <p>Correct answer: {{ choice.i }}</p>
+                        {% endfor %}
+                        
+                        {% for i in chooced %}
+                            <p>{{ choice.i }}</p>
+                        {% endfor %}
                     </div>
                 </div>
             {% endfor %}
