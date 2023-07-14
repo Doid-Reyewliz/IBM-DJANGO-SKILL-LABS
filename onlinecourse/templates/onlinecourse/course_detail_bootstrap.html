@@ -50,31 +50,18 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- Task: show questions and choices -->
-            <!-- <HINT> Use Bootstrap Collapse to hide exam first, more details could be found here
-            https://www.w3schools.com/bootstrap4/bootstrap_collapse.asp-->
 
             <div id="exam" class="collapse">
                 Click to expand elements within the collapse div
             </div>
 
-            <!-- <HINT> If user is authenticated, show course exam with a list of question -->
-
-            <!-- <HINT> Each example will have many questions -->
-
-            <!-- <HINT> Each question will have many choices -->
-
-            
             {% if user.is_authenticated %}
-                <!-- A choice submission form example -->
-                <form id="questionform" action="point to a submit view" method="post">
-                    <!-- ... for each question in the course ... -->
+                <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
                     {% for question in course.question_set.all %}
                         <div class="card mt-1">
                             <div class="card-header"><h5>{{ question.title }}</h5></div>
                             {% csrf_token %}
                             <div class="form-group">
-                            <!-- ... for each choice in the question ... -->
                             {% for choice in question.choice_set.all %}
                                 <div class="form-check">
                                     <label class="form-check-label">
@@ -90,6 +77,7 @@
                     <input class="btn btn-success btn-block" type="submit" value="Submit">
                 </form>
             {% endif %}
+
 
             <!--Check here to see more details Bootstrap checkbox
              https://www.w3schools.com/bootstrap4/bootstrap_forms_inputs.asp-->
