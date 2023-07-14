@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .models import Course, Enrollment, Question, Choice, Submission
-from .models import Course, Enrollment, Question, Choice, Submission
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -139,12 +138,6 @@ def show_exam_result(request, course_id, submission_id):
     for i in range(que_count):
         answers.append(choice[i][0]['id'])
 
-def show_exam_result(request, course_id, submission_id):
-    que = Question.objects.filter(course=course_id).values()
-    que_count = Question.objects.filter(course=course_id).count()
-    choice = []
-    for i in range(que_count):
-        choice.append(Choice.objects.filter(question=que[i]['id'], correct=1).values())
 
     choiced = extract_answers(request)
     total = 0
@@ -162,8 +155,6 @@ def show_exam_result(request, course_id, submission_id):
                 "chooced": Choice.objects.get(id=choiced[i]).answers,
                 "correct": Choice.objects.get(id=answers[i]).answers
             })
-
-
     
     context['grade'] = int(100 * float(total)/float(que_count))
     context['score'] = total
