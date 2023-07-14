@@ -113,36 +113,54 @@ def submit(request, course_id):
     return res
 
 def extract_answers(request):
-   submitted_anwsers = []
-   for key in request.POST:
-       if key.startswith('choice'):
-           value = request.POST[key]
-           choice_id = int(value)
-           submitted_anwsers.append(choice_id)
-   return submitted_anwsers
+    submitted_anwsers = []
+    for key in request.POST:
+        if key.startswith('choice'):
+            value = request.POST[key]
+            choice_id = int(value)
+            submitted_anwsers.append(choice_id)
+        else:
+            return 'empty'
+    return submitted_anwsers
 
 def show_exam_result(request, course_id, submission_id):
-    que = Question.objects.get(course=course_id)
-    choice = Choice.objects.get(question=que, correct=1)
+    que = Question.objects.filter(course=course_id).values()
     que_count = Question.objects.filter(course=course_id).count()
+    choice = []
+    for i in range(que_count):
+        choice.append(Choice.objects.filter(question=que[i]['id'], correct=1).values())
 
     context = {}
     answers = []
-    answers.append(choice.id)
+
+    context['all'] = []
+
+    for i in range(que_count):
+        answers.append(choice[i][0]['id'])
+
 
     choiced = extract_answers(request)
     total = 0
 
-    for i in range(len(choiced)):
-        if choiced[i] == answers[i]: 
-            total+=1
+    print(choiced)
+
+    if choiced != 'empty':
+        for i in range(len(choiced)):
+            if choiced[i] == answers[i]: 
+                total+=1
+    
+        for i in range(que_count):
+            context['all'].append({
+                "question": Question.objects.get(id=que[i]['id']),
+                "chooced": Choice.objects.get(id=choiced[i]).answers,
+                "correct": Choice.objects.get(id=answers[i]).answers
+            })
+
+
     
     context['grade'] = int(100 * float(total)/float(que_count))
     context['score'] = total
-    context['chooced'] = choiced
-    context['correct'] = answers
-    context['que'] = que
-
+    
     if len(choiced) == total:
         context['message'] = "Congratulations"
     else:
